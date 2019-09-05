@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafkaconsumerutility
+  namespace: ucp-rewards-na-develop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafkaconsumerutility
+  template:
+    metadata:
+      labels:
+        app: kafkaconsumerutility
+    spec:
+      containers:
+      - name: kafkaconsumerutility
+        image: zeab/kafkaconsumerutility
+        imagePullPolicy: Always
+        env:
+        - name: ROOT_LOG_LEVEL
+          value: INFO
+        - name: IS_KAFKA_SSL_ENABLED
+          value: 'true'
+        - name: KAFKA_BROKER_SERVICE_PORT_KAFKA_SSL
+          valueFrom:
+            configMapKeyRef:
+              name: feature-toggles
+              key: kafka_broker_service_port_kafka_ssl
+        - name: KAFKA_BROKER_SERVICE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: feature-toggles
+              key: kafka_broker_service_host
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 250m
+            memory: 250Mi
